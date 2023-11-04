@@ -1,21 +1,23 @@
-package com.example.wats_compose.screens.login
+package com.example.wats_compose.screens.sign_up
 
 import androidx.compose.runtime.mutableStateOf
 import com.example.wats_compose.HOME_SCREEN
-import com.example.wats_compose.LOGIN_SCREEN
-import com.example.wats_compose.R
 import com.example.wats_compose.SIGN_UP_SCREEN
 import com.example.wats_compose.common.ext.isValidEmail
+import com.example.wats_compose.common.ext.isValidPassword
+import com.example.wats_compose.common.ext.passwordMatches
 import com.example.wats_compose.common.snackbar.SnackbarManager
 import com.example.wats_compose.data.repository.AuthenticationRepository
 import com.example.wats_compose.data.service.LogService
 import com.example.wats_compose.screens.WatsViewModel
+import com.example.wats_compose.R.string as AppText
 
-class LoginViewModel(
+
+class SignUpViewModel(
     private val authenticationRepository: AuthenticationRepository,
     logService: LogService
 ) : WatsViewModel(logService) {
-    var uiState = mutableStateOf(LoginUiState())
+    var uiState = mutableStateOf(SignUpUiState())
         private set
 
     private val email
@@ -31,37 +33,29 @@ class LoginViewModel(
         uiState.value = uiState.value.copy(password = newValue)
     }
 
-    fun onSignInClick(openAndPopUp: (String, String) -> Unit) {
+    fun onRepeatPasswordChange(newValue: String) {
+        uiState.value = uiState.value.copy(repeatPassword = newValue)
+    }
+
+    fun onSignUpClick(openAndPopUp: (String, String) -> Unit) {
         if (!email.isValidEmail()) {
-            SnackbarManager.showMessage(R.string.email_error)
+            SnackbarManager.showMessage(AppText.email_error)
             return
         }
 
-        if (password.isBlank()) {
-            SnackbarManager.showMessage(R.string.empty_password_error)
+        if (!password.isValidPassword()) {
+            SnackbarManager.showMessage(AppText.password_error)
+            return
+        }
+
+        if (!password.passwordMatches(uiState.value.repeatPassword)) {
+            SnackbarManager.showMessage(AppText.password_match_error)
             return
         }
 
         launchCatching {
-            authenticationRepository.authenticate(email, password)
-            openAndPopUp(HOME_SCREEN, LOGIN_SCREEN)
+            authenticationRepository.linkAccount(email, password)
+            openAndPopUp(HOME_SCREEN, SIGN_UP_SCREEN)
         }
-    }
-
-
-    fun onForgotPasswordClick() {
-        if (!email.isValidEmail()) {
-            SnackbarManager.showMessage(R.string.email_error)
-            return
-        }
-
-        launchCatching {
-            authenticationRepository.sendRecoveryEmail(email)
-            SnackbarManager.showMessage(R.string.recovery_email_sent)
-        }
-    }
-
-    fun openSignInScreen(openScreen: (String) -> Unit) {
-        openScreen(SIGN_UP_SCREEN)
     }
 }

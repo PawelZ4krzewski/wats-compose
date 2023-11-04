@@ -1,4 +1,4 @@
-package com.example.wats_compose.screens.login
+package com.example.wats_compose.screens.sign_up
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,46 +12,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.wats_compose.common.composable.BasicButton
-import com.example.wats_compose.common.composable.BasicTextButton
 import com.example.wats_compose.common.composable.BasicToolbar
 import com.example.wats_compose.common.composable.EmailField
 import com.example.wats_compose.common.composable.PasswordField
+import com.example.wats_compose.common.composable.RepeatPasswordField
 import com.example.wats_compose.common.ext.basicButton
 import com.example.wats_compose.common.ext.fieldModifier
-import com.example.wats_compose.common.ext.textButton
 import com.example.wats_compose.theme.WatsTheme
 import org.koin.androidx.compose.koinViewModel
 import com.example.wats_compose.R.string as AppText
 
 @Composable
-fun LoginScreen(
+fun SignUpScreen(
     openAndPopUp: (String, String) -> Unit,
-    openScreen: (String) -> Unit,
-    viewModel: LoginViewModel = koinViewModel()
+    viewModel: SignUpViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState
 
-    LoginScreenContent(
+    SignUpScreenContent(
         uiState = uiState,
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
-        onSignInClick = { viewModel.onSignInClick(openAndPopUp) },
-        openScreen = { viewModel.openSignInScreen(openScreen) },
-        onForgotPasswordClick = viewModel::onForgotPasswordClick
+        onRepeatPasswordChange = viewModel::onRepeatPasswordChange,
+        onSignUpClick = { viewModel.onSignUpClick(openAndPopUp) }
     )
 }
 
 @Composable
-fun LoginScreenContent(
+fun SignUpScreenContent(
     modifier: Modifier = Modifier,
-    uiState: LoginUiState,
+    uiState: SignUpUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onSignInClick: () -> Unit,
-    openScreen: () -> Unit,
-    onForgotPasswordClick: () -> Unit
+    onRepeatPasswordChange: (String) -> Unit,
+    onSignUpClick: () -> Unit
 ) {
-    BasicToolbar(AppText.login_details)
+    val fieldModifier = Modifier.fieldModifier()
+
+    BasicToolbar(AppText.create_account)
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -60,33 +59,30 @@ fun LoginScreenContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        EmailField(uiState.email, onEmailChange, Modifier.fieldModifier())
-        PasswordField(uiState.password, onPasswordChange, Modifier.fieldModifier())
+        EmailField(uiState.email, onEmailChange, fieldModifier)
+        PasswordField(uiState.password, onPasswordChange, fieldModifier)
+        RepeatPasswordField(uiState.repeatPassword, onRepeatPasswordChange, fieldModifier)
 
-        BasicButton(AppText.sign_in, Modifier.basicButton()) { onSignInClick() }
-        BasicButton(AppText.create_account, Modifier.basicButton()) { openScreen() }
-
-        BasicTextButton(AppText.forgot_password, Modifier.textButton()) {
-            onForgotPasswordClick()
+        BasicButton(AppText.create_account, Modifier.basicButton()) {
+            onSignUpClick()
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
-    val uiState = LoginUiState(
+fun SignUpScreenPreview() {
+    val uiState = SignUpUiState(
         email = "email@test.com"
     )
 
     WatsTheme {
-        LoginScreenContent(
+        SignUpScreenContent(
             uiState = uiState,
             onEmailChange = { },
             onPasswordChange = { },
-            onSignInClick = { },
-            openScreen = { },
-            onForgotPasswordClick = { }
+            onRepeatPasswordChange = { },
+            onSignUpClick = { }
         )
     }
 }

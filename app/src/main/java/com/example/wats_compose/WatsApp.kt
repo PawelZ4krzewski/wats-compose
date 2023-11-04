@@ -31,6 +31,7 @@ import com.example.wats_compose.common.composable.RationaleDialog
 import com.example.wats_compose.common.snackbar.SnackbarManager
 import com.example.wats_compose.screens.home.HomeScreen
 import com.example.wats_compose.screens.login.LoginScreen
+import com.example.wats_compose.screens.sign_up.SignUpScreen
 import com.example.wats_compose.screens.splash.SplashScreen
 import com.example.wats_compose.theme.WatsTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -78,7 +79,8 @@ fun WatsApp() {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestNotificationPermissionDialog() {
-    val permissionState = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+    val permissionState =
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
     if (!permissionState.status.isGranted) {
         if (permissionState.status.shouldShowRationale) RationaleDialog()
@@ -112,14 +114,19 @@ fun NavGraphBuilder.watsGraph(appState: WatsAppState) {
     }
 
     composable(LOGIN_SCREEN) {
-        LoginScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+        LoginScreen(
+            openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) },
+            openScreen = { route -> appState.navigate(route) }
+        )
     }
 
     composable(HOME_SCREEN) {
-        HomeScreen()
+        HomeScreen(
+            restartApp = { route -> appState.clearAndNavigate(route) },
+        )
     }
-//    composable(SIGN_UP_SCREEN) {
-//        SignUpScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
-//    }
+    composable(SIGN_UP_SCREEN) {
+        SignUpScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.example.wats_compose.screens.splash
 
 import androidx.compose.runtime.mutableStateOf
+import com.example.wats_compose.HOME_SCREEN
 import com.example.wats_compose.LOGIN_SCREEN
 import com.example.wats_compose.SPLASH_SCREEN
 import com.example.wats_compose.data.repository.AuthenticationRepository
@@ -16,19 +17,19 @@ class SplashViewModel(
     fun onAppStart(openAndPopUp: (String, String) -> Unit) {
 
         showError.value = false
-        if (authenticationRepository.hasUser) openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
-        else createAnonymousAccount(openAndPopUp)
+        if (authenticationRepository.hasUser) openAndPopUp(HOME_SCREEN, SPLASH_SCREEN)
+        else openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
     }
 
-    private fun createAnonymousAccount(openAndPopUp: (String, String) -> Unit) {
-        launchCatching(snackbar = false) {
+//    private fun createAnonymousAccount(openAndPopUp: (String, String) -> Unit) {
+//        launchCatching(snackbar = false) {
 //            try {
 //                authenticationRepository.createAnonymousAccount()
 //            } catch (ex: FirebaseAuthException) {
 //                showError.value = true
 //                throw ex
 //            }
-            openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
-        }
-    }
+//            openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
+//        }
+//    }
 }
