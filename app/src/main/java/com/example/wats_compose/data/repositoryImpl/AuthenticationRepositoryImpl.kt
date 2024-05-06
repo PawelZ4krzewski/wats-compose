@@ -37,14 +37,10 @@ class AuthenticationRepositoryImpl(
         auth.sendPasswordResetEmail(email).await()
     }
 
-    override suspend fun createAnonymousAccount() {
-        auth.signInAnonymously().await()
-    }
-
-    override suspend fun getAccessToken(onSucess: (String) -> Unit) {
+    override suspend fun getAccessToken(onSuccess: (String) -> Unit) {
         auth.currentUser?.getIdToken(true)?.addOnCompleteListener {
             if (it.isSuccessful) {
-                onSucess(it.result?.token.orEmpty())
+                onSuccess(it.result?.token.orEmpty())
             }
         }
     }
@@ -79,8 +75,6 @@ class AuthenticationRepositoryImpl(
         }
         auth.signOut()
 
-        // Sign the user back in anonymously.
-//        createAnonymousAccount()
     }
 
     companion object {

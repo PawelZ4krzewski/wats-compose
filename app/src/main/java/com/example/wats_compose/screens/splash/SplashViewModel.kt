@@ -20,16 +20,4 @@ class SplashViewModel(
         if (authenticationRepository.hasUser) openAndPopUp(HOME_SCREEN, SPLASH_SCREEN)
         else openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
     }
-
-//    private fun createAnonymousAccount(openAndPopUp: (String, String) -> Unit) {
-//        launchCatching(snackbar = false) {
-//            try {
-//                authenticationRepository.createAnonymousAccount()
-//            } catch (ex: FirebaseAuthException) {
-//                showError.value = true
-//                throw ex
-//            }
-//            openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
-//        }
-//    }
 }
