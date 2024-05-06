@@ -14,7 +14,8 @@ interface AuthenticationRepository {
     suspend fun sendRecoveryEmail(email: String)
     suspend fun createAnonymousAccount()
     suspend fun linkAccount(email: String, password: String)
+    suspend fun createAccount(email: String, password: String, onSucess: () -> Unit, onFailure: () -> Unit)
     suspend fun deleteAccount()
     suspend fun signOut()
-
+    suspend fun getAccessToken(onSuccess: (String) -> Unit)
 }

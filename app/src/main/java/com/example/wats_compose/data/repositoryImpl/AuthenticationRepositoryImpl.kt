@@ -1,5 +1,6 @@
 package com.example.wats_compose.data.repositoryImpl
 
+import android.util.Log
 import com.example.wats_compose.data.model.UserModel
 import com.example.wats_compose.data.repository.AuthenticationRepository
 import com.example.wats_compose.data.service.trace
@@ -29,6 +30,7 @@ class AuthenticationRepositoryImpl(
         }
     override suspend fun authenticate(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).await()
+        auth.pendingAuthResult?.result
     }
 
     override suspend fun sendRecoveryEmail(email: String) {
@@ -39,11 +41,33 @@ class AuthenticationRepositoryImpl(
         auth.signInAnonymously().await()
     }
 
+    override suspend fun getAccessToken(onSucess: (String) -> Unit) {
+        auth.currentUser?.getIdToken(true)?.addOnCompleteListener {
+            if (it.isSuccessful) {
+                onSucess(it.result?.token.orEmpty())
+            }
+        }
+    }
+
     override suspend fun linkAccount(email: String, password: String): Unit =
         trace(LINK_ACCOUNT_TRACE) {
             val credential = EmailAuthProvider.getCredential(email, password)
             auth.currentUser?.linkWithCredential(credential)?.await()
         }
+
+    override suspend fun createAccount(email: String, password: String, onSucess: () -> Unit, onFailure: () -> Unit) {
+        trace(CREATE_ACCOUNT) {
+            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    onSucess()
+                    Log.d("AuthenticationRepositoryImpl", "createAccount: success")
+                } else {
+                    onFailure()
+                    Log.d("AuthenticationRepositoryImpl", "createAccount: failure")
+                }
+            }
+        }
+    }
 
     override suspend fun deleteAccount() {
         auth.currentUser?.delete()?.await()
@@ -61,6 +85,7 @@ class AuthenticationRepositoryImpl(
 
     companion object {
         private const val LINK_ACCOUNT_TRACE = "linkAccount"
+        private const val CREATE_ACCOUNT = "createAccount"
     }
 
 }

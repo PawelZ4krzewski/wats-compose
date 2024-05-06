@@ -55,7 +55,14 @@ class SignUpViewModel(
 
         launchCatching {
             authenticationRepository.linkAccount(email, password)
-            openAndPopUp(HOME_SCREEN, SIGN_UP_SCREEN)
+            authenticationRepository.createAccount(
+                email = email,
+                password = password,
+                onSucess = {
+                    openAndPopUp(HOME_SCREEN, SIGN_UP_SCREEN)
+                },
+                onFailure = { })
+
         }
     }
 }
