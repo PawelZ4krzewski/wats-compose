@@ -1,6 +1,7 @@
 package com.example.wats_compose
 
 import android.app.Application
+import com.example.wats_compose.data.module.apiModule
 import com.example.wats_compose.data.module.appModule
 import com.example.wats_compose.data.module.firebaseModule
 import org.koin.android.ext.koin.androidContext
@@ -12,7 +13,7 @@ class WatsKoinApp: Application() {
         super.onCreate()
         startKoin {
             androidContext(this@WatsKoinApp)
-            modules(appModule, firebaseModule)
+            modules(appModule, firebaseModule, apiModule)
         }
     }
 }
